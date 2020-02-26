@@ -12,7 +12,7 @@ class Client(object):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((self.target_host, self.target_port))
         # Change directory to 'Desktop'.
-        os.chdir(os.path.join(os.environ["HOMEPATH"], "Desktop"))
+        # os.chdir(os.path.join(os.environ["HOMEPATH"], "Desktop")) #TODO Fix this.
 
     def main(self):
         while True:
