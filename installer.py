@@ -2,7 +2,8 @@ import time
 from subprocess import Popen, PIPE
 import os
 
-if __name__ == '__main__':
+
+def main():
     try:
         # Change directory to 'Desktop'.
         os.chdir(os.path.join(os.environ["HOMEPATH"], "Desktop"))
@@ -30,3 +31,7 @@ if __name__ == '__main__':
         time.sleep(10000)
     except Exception as e:
         print(e)
+
+
+if __name__ == '__main__':
+    main()
