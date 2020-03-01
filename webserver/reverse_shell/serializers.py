@@ -5,7 +5,7 @@ from rest_framework import serializers
 class AttackerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attacker
-        fields = ['ip', 'port', 'computer_name', 'mac_address']
+        fields = ['ip', 'port', 'computer_name', 'mac_address', 'victim']
 
 
 class VictimSerializer(serializers.ModelSerializer):
