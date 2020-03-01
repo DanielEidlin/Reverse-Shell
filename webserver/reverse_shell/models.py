@@ -9,7 +9,7 @@ class Victim(models.Model):
     logged_in = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.computer_name + ' ' + self.ip + ' ' + self.port
+        return f'{self.computer_name} {self.ip} {self.port}'
 
 
 class Attacker(models.Model):
@@ -20,4 +20,4 @@ class Attacker(models.Model):
     victim = models.OneToOneField(Victim, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
-        return self.computer_name + ' ' + self.ip + ' ' + self.port
+        return f'{self.computer_name} {self.ip} {self.port}'
