@@ -4,7 +4,7 @@ from django.db import models
 class Victim(models.Model):
     ip = models.GenericIPAddressField()
     port = models.IntegerField()
-    mac_address = models.CharField(max_length=200, unique=True)
+    mac_address = models.CharField(max_length=200, unique=True, primary_key=True)
     computer_name = models.CharField(max_length=200, blank=True)
     logged_in = models.BooleanField(default=True)
 
@@ -15,7 +15,7 @@ class Victim(models.Model):
 class Attacker(models.Model):
     ip = models.GenericIPAddressField()
     port = models.IntegerField()
-    mac_address = models.CharField(max_length=200, unique=True)
+    mac_address = models.CharField(max_length=200, unique=True, primary_key=True)
     computer_name = models.CharField(max_length=200, blank=True)
     victim = models.OneToOneField(Victim, on_delete=models.CASCADE, blank=True, null=True)
 
