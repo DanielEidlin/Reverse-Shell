@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from .models import Attacker, Victim
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django.shortcuts import get_object_or_404
 from .serializers import AttackerSerializer, VictimSerializer
 
 
@@ -19,6 +20,17 @@ class AttackerViewSet(viewsets.ModelViewSet):
     queryset = Attacker.objects.all()
     serializer_class = AttackerSerializer
 
+    @action(detail=False, methods=['get'])
+    def get_attacker(self, request):
+        """
+        Returns all the attacker who requested to connect to this victim.
+        :return: Serialized attacker that requested to connect to this victim.
+        """
+        mac_address = request.query_params['mac_address']
+        attacker = get_object_or_404(Attacker, victim__mac_address=mac_address)
+        serialized_attacker = AttackerSerializer(attacker, many=False)
+        return Response(serialized_attacker.data)
+
 
 class VictimViewSet(viewsets.ModelViewSet):
     """
@@ -28,7 +40,7 @@ class VictimViewSet(viewsets.ModelViewSet):
     serializer_class = VictimSerializer
 
     @action(detail=False, methods=['get'])
-    def available_victims(self, request):
+    def available_victims(self):
         """
         Returns all the logged in victims.
         :return: Serialized victims that are logged in.
