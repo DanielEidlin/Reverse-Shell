@@ -31,5 +31,9 @@ class Server(object):
 
 
 if __name__ == '__main__':
-    server = Server()
-    server.main()
+    while True:
+        try:
+            server = Server()
+            server.main()
+        except:
+            server.server.close()
