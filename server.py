@@ -5,6 +5,7 @@ class Server(object):
 
     def __init__(self):
         self.alive = True
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def start_connection(self):
         bind_ip = '0.0.0.0'

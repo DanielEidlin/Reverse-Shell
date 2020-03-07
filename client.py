@@ -15,6 +15,7 @@ class Client(object):
         self.host_ip = socket.gethostbyname(self.host_name)
         self.port = ''
         self.mac_address = self.get_mac_address()
+        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Change directory to 'Desktop'.
         # os.chdir(os.path.join(os.environ["HOMEPATH"], "Desktop")) #TODO Fix this.
 
