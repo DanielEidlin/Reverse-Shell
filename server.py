@@ -6,6 +6,7 @@ class Server(object):
     def __init__(self):
         self.alive = True
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.BUFF_SIZE = 4096  # 4 KiB
 
     def start_connection(self):
         bind_ip = '0.0.0.0'
@@ -25,8 +26,19 @@ class Server(object):
                 break
             elif len(str.encode(command)) > 0:
                 client_socket.send(str.encode(command))
-                client_response = str(client_socket.recv(1024), "utf-8")
+                # client_response = self.recvall(client_socket)
+                client_response = client_socket.recv(1024).decode('utf-8')
                 print(client_response)
+
+    def recvall(self, sock):
+        data = b''
+        while True:
+            part = sock.recv(self.BUFF_SIZE)
+            data += part
+            if len(part) < self.BUFF_SIZE:
+                # either 0 or end of data
+                break
+        return data.decode('utf-8')
 
     def main(self):
         while self.alive:

