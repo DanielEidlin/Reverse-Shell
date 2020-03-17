@@ -1,6 +1,5 @@
 from api import create_victim, update_victim, get_attacker
 import subprocess
-import requests
 import socket
 import json
 import uuid
