@@ -73,6 +73,5 @@ class Client(object):
 
     def get_attacker(self, mac_address):
         response = self.session.get(
-            f'https://intense-river-70224.herokuapp.com/api/attackers/get_attacker/?mac_address='
-            f'{mac_address}')
+            f'https://intense-river-70224.herokuapp.com/api/attackers/get_attacker/?mac_address={mac_address}')
         return response
