@@ -20,6 +20,7 @@ class Client(object):
         return r2
 
     def login(self, username, password):
+        session_id = None
         password = sha256(password.encode()).hexdigest()
         # Validate login first
         r1 = self.session.get('http://localhost:8000/reverse_shell/validate-login/')
@@ -40,7 +41,8 @@ class Client(object):
                                        'username': username,
                                        'password': password,
                                    })
-        return r2
+            session_id = r2.history[0].cookies['sessionid']
+        return r2, session_id
 
     def logout(self):
         response = self.session.get('http://localhost:8000/reverse_shell/logout/')

