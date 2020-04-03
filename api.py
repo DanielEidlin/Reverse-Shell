@@ -3,33 +3,33 @@ from hashlib import sha256
 
 
 class Client(object):
-    def __init__(self):
+    def __init__(self, username, password):
+        self.username = username
+        self.password = sha256(password.encode()).hexdigest()
         self.session = requests.Session()
 
-    def register(self, username, password):
-        password = sha256(password.encode()).hexdigest()
+    def register(self):
         r1 = self.session.get('http://localhost:8000/reverse_shell/register/')
         csrf = r1.cookies['csrftoken']
         r2 = self.session.post('http://localhost:8000/reverse_shell/register/',
                                data={
                                    'csrfmiddlewaretoken': csrf,
-                                   'username': username,
-                                   'password1': password,
-                                   'password2': password,
+                                   'username': self.username,
+                                   'password1': self.password,
+                                   'password2': self.password,
                                })
         return r2
 
-    def login(self, username, password):
+    def login(self):
         session_id = None
-        password = sha256(password.encode()).hexdigest()
         # Validate login first
         r1 = self.session.get('http://localhost:8000/reverse_shell/validate-login/')
         csrf = r1.cookies['csrftoken']
         r2 = self.session.post('http://localhost:8000/reverse_shell/validate-login/',
                                data={
                                    'csrfmiddlewaretoken': csrf,
-                                   'username': username,
-                                   'password': password,
+                                   'username': self.username,
+                                   'password': self.password,
                                })
         if r2.status_code == 200:
             # Do the real login
@@ -38,42 +38,26 @@ class Client(object):
             r2 = self.session.post('http://localhost:8000/reverse_shell/login/',
                                    data={
                                        'csrfmiddlewaretoken': csrf,
-                                       'username': username,
-                                       'password': password,
+                                       'username': self.username,
+                                       'password': self.password,
                                    })
-            session_id = r2.history[0].cookies['sessionid']
+            session_id = self.session.cookies['sessionid']
         return r2, session_id
 
     def logout(self):
         response = self.session.get('http://localhost:8000/reverse_shell/logout/')
         return response
 
-    def create_victim(self, ip, port, computer_name, mac_address, username):
+    def create_victim(self, computer_name, mac_address):
         response = self.session.get('http://localhost:8000/api/victims/')
         csrf = response.cookies['csrftoken']
 
         data = {
             'csrfmiddlewaretoken': csrf,
-            'ip': ip,
-            'port': port,
             'computer_name': computer_name,
             'mac_address': mac_address,
             'logged_in': True,
-            'owner': username,
+            'owner': self.username,
         }
         response = self.session.post('http://localhost:8000/api/victims/', data=data)
-        return response
-
-    def update_victim(self, mac_address, data):
-        response = self.session.get('http://localhost:8000/api/victims/')
-        csrf = response.cookies['csrftoken']
-        data['csrfmiddlewaretoken'] = csrf
-
-        response = self.session.patch(f'http://localhost:8000/api/victims/{mac_address}/',
-                                      data=data)
-        return response
-
-    def get_attacker(self, mac_address):
-        response = self.session.get(
-            f'http://localhost:8000/api/attackers/get_attacker/?mac_address={mac_address}')
         return response
