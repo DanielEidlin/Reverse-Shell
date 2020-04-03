@@ -60,9 +60,8 @@ class Client(object):
                     output = self.execute_command(command)
                     ws.send(json.dumps({'message': output}))
             except:
-                # ws.close()
-                # self.api.logout()
-                raise
+                ws.close()
+                self.api.logout()
 
 
 if __name__ == '__main__':
