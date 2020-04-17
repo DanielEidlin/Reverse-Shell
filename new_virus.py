@@ -62,6 +62,7 @@ class WebClient(object):
                                    'username': self.username,
                                    'password1': self.password,
                                    'password2': self.password,
+                                   'victim': True,
                                })
         return r2
 
