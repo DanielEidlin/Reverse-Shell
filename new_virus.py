@@ -155,7 +155,6 @@ class Client(object):
                                                  cookie=f'sessionid={self.session_id}')
                 while True:
                     data = ws.recv()
-                    print(data)
                     json_data = json.loads(data)
                     command = json_data['message']
                     output = self.execute_command(command)
