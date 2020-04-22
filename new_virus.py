@@ -143,7 +143,9 @@ class Client(object):
                 command[:], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
             )
             output_bytes = command.stdout.read()
-            output_str = f'{os.getcwd()}$ {str(output_bytes, "utf-8")}'
+            error_bytes = command.stderr.read()
+            output_str = f'{os.getcwd()}$ {str(output_bytes, "utf-8") }{str(error_bytes, "utf-8")}'
+            output_str = output_str.replace('\n', '\r\n')
         return output_str
 
     def main(self):
