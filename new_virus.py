@@ -3,7 +3,6 @@ import re
 import sys
 import ssl
 import json
-import time
 import uuid
 import socket
 import winreg
