@@ -169,7 +169,6 @@ class Client(object):
 
     def __init__(self):
         self.host_name = socket.gethostname()
-        self.host_ip = socket.gethostbyname(self.host_name)
         self.port = ''
         self.mac_address = self.get_mac_address()
         username = self.mac_address.replace(':', '')
