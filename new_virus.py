@@ -45,12 +45,10 @@ class AdminPrivilegesManager(object):
         self.old_value = ''
 
     def disable_file_system_redirection(self):
-        self.old_value
         self.old_value = ctypes.c_long()
         ctypes.windll.kernel32.Wow64DisableWow64FsRedirection(ctypes.byref(self.old_value))
 
     def enable_file_system_redirection(self):
-        self.old_value
         ctypes.windll.kernel32.Wow64RevertWow64FsRedirection(self.old_value)
 
     def is_running_as_admin(self):
