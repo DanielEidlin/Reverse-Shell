@@ -167,7 +167,6 @@ class Client(object):
 
     def __init__(self):
         self.host_name = socket.gethostname()
-        self.port = ''
         self.mac_address = self.get_mac_address()
         username = self.mac_address.replace(':', '')
         self.api = WebClient(username, password=username)
